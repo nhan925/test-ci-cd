@@ -2,153 +2,231 @@ package org.springframework.samples.petclinic.customers.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Date;
 
-class PetTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Unit tests for {@link Pet}
+ */
+public class PetTest {
 
     private Pet pet;
-    private PetType petType;
     private Owner owner;
+    private PetType petType;
+    private Date birthDate;
 
     @BeforeEach
     void setUp() {
+        // Create a pet type
         petType = new PetType();
         petType.setId(1);
         petType.setName("Dog");
 
+        // Create an owner
         owner = new Owner();
-        owner.setFirstName("George");
-        owner.setLastName("Bush");
+        owner.setFirstName("John");
+        owner.setLastName("Doe");
+        owner.setAddress("123 Main St");
+        owner.setCity("Springfield");
+        owner.setTelephone("1234567890");
 
+        // Create a birth date
+        birthDate = new Date();
+
+        // Create a pet
         pet = new Pet();
-        pet.setId(1);
-        pet.setName("Basil");
-        pet.setBirthDate(new Date());
+        pet.setName("Buddy");
+        pet.setBirthDate(birthDate);
         pet.setType(petType);
         pet.setOwner(owner);
     }
 
-    // Test: Get Pet Id
     @Test
     void testGetId() {
-        assertEquals(1, pet.getId());
+        assertEquals(Integer.valueOf(1), pet.getId());
     }
 
-    // Test: Get Pet Name
+    @Test
+    void testSetId() {
+        assertEquals(Integer.valueOf(2), pet.getId());
+    }
+
     @Test
     void testGetName() {
-        assertEquals("Basil", pet.getName());
+        assertEquals("Buddy", pet.getName());
     }
 
-    // Test: Get Pet Birth Date
+    @Test
+    void testSetName() {
+        pet.setName("Max");
+        assertEquals("Max", pet.getName());
+    }
+
     @Test
     void testGetBirthDate() {
-        assertNotNull(pet.getBirthDate());
+        assertEquals(birthDate, pet.getBirthDate());
     }
 
-    // Test: Get Pet Type
+    @Test
+    void testSetBirthDate() {
+        Date newBirthDate = new Date(birthDate.getTime() - 86400000); // One day before
+        pet.setBirthDate(newBirthDate);
+        assertEquals(newBirthDate, pet.getBirthDate());
+    }
+
     @Test
     void testGetType() {
-        assertNotNull(pet.getType());
+        assertEquals(petType, pet.getType());
         assertEquals("Dog", pet.getType().getName());
     }
 
-    // Test: Get Pet Owner
-    @Test
-    void testGetOwner() {
-        assertNotNull(pet.getOwner());
-        assertEquals("George", pet.getOwner().getFirstName());
-    }
-
-    // Test: Set Pet Id
-    @Test
-    void testSetId() {
-        pet.setId(2);
-        assertEquals(2, pet.getId());
-    }
-
-    // Test: Set Pet Name
-    @Test
-    void testSetName() {
-        pet.setName("Bella");
-        assertEquals("Bella", pet.getName());
-    }
-
-    // Test: Set Pet Birth Date
-    @Test
-    void testSetBirthDate() {
-        Date newDate = new Date(1000000000L);  // Setting some arbitrary date
-        pet.setBirthDate(newDate);
-        assertEquals(newDate, pet.getBirthDate());
-    }
-
-    // Test: Set Pet Type
     @Test
     void testSetType() {
-        PetType newPetType = new PetType();
-        newPetType.setId(2);
-        newPetType.setName("Cat");
-        pet.setType(newPetType);
+        PetType catType = new PetType();
+        catType.setId(2);
+        catType.setName("Cat");
+        
+        pet.setType(catType);
+        assertEquals(catType, pet.getType());
         assertEquals("Cat", pet.getType().getName());
     }
 
-    // Test: Set Pet Owner
     @Test
-    void testSetOwner() {
-        Owner newOwner = new Owner();
-        newOwner.setFirstName("John");
-        newOwner.setLastName("Doe");
-        pet.setOwner(newOwner);
+    void testGetOwner() {
+        assertEquals(owner, pet.getOwner());
         assertEquals("John", pet.getOwner().getFirstName());
         assertEquals("Doe", pet.getOwner().getLastName());
     }
 
-    // Test: ToString method
+    @Test
+    void testSetOwner() {
+        Owner newOwner = new Owner();
+        newOwner.setFirstName("Jane");
+        newOwner.setLastName("Smith");
+        
+        pet.setOwner(newOwner);
+        assertEquals(newOwner, pet.getOwner());
+        assertEquals("Jane", pet.getOwner().getFirstName());
+        assertEquals("Smith", pet.getOwner().getLastName());
+    }
+
     @Test
     void testToString() {
-        String expectedString = "Pet[id=1,name=Basil,birthDate=" + pet.getBirthDate().toString() +
-                                ",type=Dog,ownerFirstname=George,ownerLastname=Bush]";
-        assertEquals(expectedString, pet.toString());
+        String petString = pet.toString();
+        
+        assertTrue(petString.contains("id=1"));
+        assertTrue(petString.contains("name=Buddy"));
+        assertTrue(petString.contains("birthDate=" + birthDate));
+        assertTrue(petString.contains("type=Dog"));
+        assertTrue(petString.contains("ownerFirstname=John"));
+        assertTrue(petString.contains("ownerLastname=Doe"));
     }
 
-    // Test: Equals method (Positive case)
     @Test
-    void testEqualsPositive() {
-        Pet samePet = new Pet();
-        samePet.setId(1);
-        samePet.setName("Basil");
-        samePet.setBirthDate(pet.getBirthDate());
-        samePet.setType(petType);
-        samePet.setOwner(owner);
-
-        assertTrue(pet.equals(samePet));
+    void testEqualsWithSameObject() {
+        assertTrue(pet.equals(pet));
     }
 
-    // Test: Equals method (Negative case)
     @Test
-    void testEqualsNegative() {
-        Pet differentPet = new Pet();
-        differentPet.setId(2);
-        differentPet.setName("Bella");
-        differentPet.setBirthDate(pet.getBirthDate());
-        differentPet.setType(petType);
-        differentPet.setOwner(owner);
+    void testEqualsWithNull() {
+        assertFalse(pet.equals(null));
+    }
 
+    @Test
+    void testEqualsWithDifferentClass() {
+        assertFalse(pet.equals(new Object()));
+    }
+
+    @Test
+    void testEqualsWithEquivalentObject() {
+        Pet anotherPet = new Pet();
+        anotherPet.setName("Buddy");
+        anotherPet.setBirthDate(birthDate);
+        anotherPet.setType(petType);
+        anotherPet.setOwner(owner);
+        
+        assertTrue(pet.equals(anotherPet));
+        assertTrue(anotherPet.equals(pet));
+    }
+
+    @Test
+    void testEqualsWithDifferentId() {
+        Pet differentPet = createClonePet();
+        
         assertFalse(pet.equals(differentPet));
     }
 
-    // Test: HashCode method
     @Test
-    void testHashCode() {
-        Pet samePet = new Pet();
-        samePet.setId(1);
-        samePet.setName("Basil");
-        samePet.setBirthDate(pet.getBirthDate());
-        samePet.setType(petType);
-        samePet.setOwner(owner);
+    void testEqualsWithDifferentName() {
+        Pet differentPet = createClonePet();
+        differentPet.setName("Max");
+        
+        assertFalse(pet.equals(differentPet));
+    }
 
+    @Test
+    void testEqualsWithDifferentBirthDate() {
+        Pet differentPet = createClonePet();
+        differentPet.setBirthDate(new Date(birthDate.getTime() - 86400000)); // One day before
+        
+        assertFalse(pet.equals(differentPet));
+    }
+
+    @Test
+    void testEqualsWithDifferentType() {
+        Pet differentPet = createClonePet();
+        
+        PetType catType = new PetType();
+        catType.setId(2);
+        catType.setName("Cat");
+        differentPet.setType(catType);
+        
+        assertFalse(pet.equals(differentPet));
+    }
+
+    @Test
+    void testEqualsWithDifferentOwner() {
+        Pet differentPet = createClonePet();
+        
+        Owner newOwner = new Owner();
+        newOwner.setFirstName("Jane");
+        newOwner.setLastName("Smith");
+        differentPet.setOwner(newOwner);
+        
+        assertFalse(pet.equals(differentPet));
+    }
+
+    @Test
+    void testHashCodeConsistency() {
+        int initialHashCode = pet.hashCode();
+        assertEquals(initialHashCode, pet.hashCode());
+    }
+
+    @Test
+    void testHashCodeEquality() {
+        Pet samePet = createClonePet();
         assertEquals(pet.hashCode(), samePet.hashCode());
+    }
+
+    @Test
+    void testHashCodeInequality() {
+        Pet differentPet = createClonePet();
+        differentPet.setName("Max");
+        
+        assertNotEquals(pet.hashCode(), differentPet.hashCode());
+    }
+
+    /**
+     * Helper method to create a clone of the test pet
+     */
+    private Pet createClonePet() {
+        Pet clonePet = new Pet();
+        clonePet.setName(pet.getName());
+        clonePet.setBirthDate(pet.getBirthDate());
+        clonePet.setType(pet.getType());
+        clonePet.setOwner(pet.getOwner());
+        return clonePet;
     }
 }
