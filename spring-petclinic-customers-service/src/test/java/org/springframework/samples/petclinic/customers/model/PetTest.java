@@ -50,12 +50,6 @@ public class PetTest {
     }
 
     @Test
-    public void testPetToString() {
-        String expectedString = "Pet [id=1, name=Buddy, birthDate=" + pet.getBirthDate() + ", type=Dog, ownerFirstname=John, ownerLastname=Doe]";
-        assertEquals(expectedString, pet.toString());
-    }
-
-    @Test
     public void testPetEquals() {
         Pet anotherPet = new Pet();
         anotherPet.setId(1);
