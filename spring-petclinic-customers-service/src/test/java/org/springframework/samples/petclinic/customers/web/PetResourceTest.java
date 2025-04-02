@@ -108,7 +108,6 @@ class PetResourceTest {
     @Test
     void shouldCreateNewPet() throws Exception {
         Owner owner = new Owner();
-        owner.setId(1);
         
         PetType petType = new PetType();
         petType.setId(6);
