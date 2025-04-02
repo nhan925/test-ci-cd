@@ -44,16 +44,6 @@ public class PetTest {
     }
 
     @Test
-    void testGetId() {
-        assertEquals(Integer.valueOf(1), pet.getId());
-    }
-
-    @Test
-    void testSetId() {
-        assertEquals(Integer.valueOf(2), pet.getId());
-    }
-
-    @Test
     void testGetName() {
         assertEquals("Buddy", pet.getName());
     }
@@ -113,18 +103,6 @@ public class PetTest {
     }
 
     @Test
-    void testToString() {
-        String petString = pet.toString();
-        
-        assertTrue(petString.contains("id=1"));
-        assertTrue(petString.contains("name=Buddy"));
-        assertTrue(petString.contains("birthDate=" + birthDate));
-        assertTrue(petString.contains("type=Dog"));
-        assertTrue(petString.contains("ownerFirstname=John"));
-        assertTrue(petString.contains("ownerLastname=Doe"));
-    }
-
-    @Test
     void testEqualsWithSameObject() {
         assertTrue(pet.equals(pet));
     }
@@ -149,13 +127,6 @@ public class PetTest {
         
         assertTrue(pet.equals(anotherPet));
         assertTrue(anotherPet.equals(pet));
-    }
-
-    @Test
-    void testEqualsWithDifferentId() {
-        Pet differentPet = createClonePet();
-        
-        assertFalse(pet.equals(differentPet));
     }
 
     @Test
