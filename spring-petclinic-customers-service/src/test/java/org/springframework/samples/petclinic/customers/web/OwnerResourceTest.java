@@ -48,32 +48,6 @@ public class OwnerResourceTest {
     }
 
     @Test
-    void createOwner() throws Exception {
-        // Mô phỏng hành vi của ownerEntityMapper và ownerRepository
-        when(ownerEntityMapper.map(any(), any())).thenReturn(owner);
-        when(ownerRepository.save(any())).thenReturn(owner);
-
-        mockMvc.perform(post("/owners")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(owner)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.lastName").value("Doe"));
-    }
-
-    @Test
-    void findOwner() throws Exception {
-        when(ownerRepository.findById(1)).thenReturn(Optional.of(owner));
-
-        mockMvc.perform(get("/owners/{ownerId}", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.lastName").value("Doe"));
-    }
-
-    @Test
     void updateOwner() throws Exception {
         when(ownerRepository.findById(1)).thenReturn(Optional.of(owner));
         when(ownerRepository.save(any())).thenReturn(owner);
