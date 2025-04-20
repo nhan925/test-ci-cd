@@ -71,8 +71,7 @@ pipeline {
                     // Now check if build became unstable due to coverage, and fail it explicitly
                     script {
                         if (currentBuild.result == 'UNSTABLE') {
-                            echo "Build failed: Line is below the required minimum ${env.MINIMUM_COVERAGE}%"
-                            currentBuild.result = 'FAILURE'
+                            error "Build failed: Line is below the required minimum ${env.MINIMUM_COVERAGE}%"
                         }
                     }
                 }
