@@ -9,21 +9,19 @@ pipeline {
     environment {
         CHANGED_SERVICES = ""
         MINIMUM_COVERAGE = 70
+        SERVICES = ['spring-petclinic-admin-server', 
+                    'spring-petclinic-api-gateway', 
+                    'spring-petclinic-config-server', 
+                    'spring-petclinic-discovery-server', 
+                    'spring-petclinic-customers-service', 
+                    'spring-petclinic-vets-service', 
+                    'spring-petclinic-visits-service']
     }
     
     stages {
         stage('Detect Changes') {
             steps {
-                script {
-                    // Define services array here, not in environment
-                    def SERVICES = ['spring-petclinic-admin-server', 
-                                    'spring-petclinic-api-gateway', 
-                                    'spring-petclinic-config-server', 
-                                    'spring-petclinic-discovery-server', 
-                                    'spring-petclinic-customers-service', 
-                                    'spring-petclinic-vets-service', 
-                                    'spring-petclinic-visits-service']
-                    
+                script {                  
                     def compareTarget = env.CHANGE_TARGET ? "origin/${env.CHANGE_TARGET}" : "HEAD~1"
                     def changedFiles = sh(script: "git diff --name-only ${compareTarget}", returnStdout: true).trim()
                     
@@ -46,18 +44,10 @@ pipeline {
             }
         }
         
-        stage('Test') {
+        stage('Build & Test') {
             when { expression { return !CHANGED_SERVICES.isEmpty() } }
             steps {
-                script {
-                    def SERVICES = ['spring-petclinic-admin-server', 
-                                    'spring-petclinic-api-gateway', 
-                                    'spring-petclinic-config-server', 
-                                    'spring-petclinic-discovery-server', 
-                                    'spring-petclinic-customers-service', 
-                                    'spring-petclinic-vets-service', 
-                                    'spring-petclinic-visits-service']
-                    
+                script {                  
                     if (CHANGED_SERVICES == SERVICES.join(",")) {
                         sh 'mvn verify'
                     } else {
@@ -90,37 +80,8 @@ pipeline {
                             error "Build failed: Line coverage is below the required minimum ${env.MINIMUM_COVERAGE}%"
                         }
                     }
-                    
-                    // Debug step to verify JaCoCo files
-                    sh 'echo "Checking for JaCoCo files:"'
-                    sh 'find . -name "jacoco.exec" | xargs ls -la || echo "No jacoco.exec files found"'
-                    sh 'find . -name "jacoco.xml" | xargs ls -la || echo "No jacoco.xml files found"'
-                }
-            }
-        }
-        
-        stage('Build') {
-            when { expression { return !CHANGED_SERVICES.isEmpty() } }
-            steps {
-                script {
-                    def SERVICES = ['spring-petclinic-admin-server', 
-                                    'spring-petclinic-api-gateway', 
-                                    'spring-petclinic-config-server', 
-                                    'spring-petclinic-discovery-server', 
-                                    'spring-petclinic-customers-service', 
-                                    'spring-petclinic-vets-service', 
-                                    'spring-petclinic-visits-service']
-                    
-                    if (CHANGED_SERVICES == SERVICES.join(",")) {
-                        sh 'mvn package -DskipTests'
-                    } else {
-                        CHANGED_SERVICES.split(",").each { service ->
-                            dir(service) {
-                                echo "Building ${service}"
-                                sh 'mvn package -DskipTests'
-                            }
-                        }
-                    }
+
+                    sh 'mvn clean'
                 }
             }
         }
