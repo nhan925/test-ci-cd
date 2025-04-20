@@ -26,26 +26,26 @@ pipeline {
                         }
                     }
                     
-                    env.CHANGED_SERVICES = changedServicesList.join(",")
+                    def CHANGED_SERVICES = changedServicesList.join(",")
                     
                     if (env.CHANGED_SERVICES.isEmpty() && 
                         changedFiles.split("\n").any { it == "pom.xml" || it.startsWith("src/") }) {
-                        env.CHANGED_SERVICES = env.SERVICES
+                        CHANGED_SERVICES = env.SERVICES
                     }
                     
-                    echo "Services to build: ${env.CHANGED_SERVICES ?: 'None'}"
+                    echo "Services to build: ${CHANGED_SERVICES ?: 'None'}"
                 }
             }
         }
         
         stage('Build & Test') {
-            when { expression { return !env.CHANGED_SERVICES.isEmpty() } }
+            when { expression { return !CHANGED_SERVICES.isEmpty() } }
             steps {
                 script {                  
-                    if (env.CHANGED_SERVICES == env.SERVICES) {
+                    if (CHANGED_SERVICES == env.SERVICES) {
                         sh 'mvn verify'
                     } else {
-                        env.CHANGED_SERVICES.split(",").each { service ->
+                        CHANGED_SERVICES.split(",").each { service ->
                             dir(service) {
                                 echo "Testing ${service}"
                                 sh 'mvn verify'
