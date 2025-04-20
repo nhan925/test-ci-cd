@@ -9,13 +9,13 @@ pipeline {
     environment {
         CHANGED_SERVICES = ""
         MINIMUM_COVERAGE = 70
-        SERVICES = ['spring-petclinic-admin-server', 
+        SERVICES = "'spring-petclinic-admin-server', 
                     'spring-petclinic-api-gateway', 
                     'spring-petclinic-config-server', 
                     'spring-petclinic-discovery-server', 
                     'spring-petclinic-customers-service', 
                     'spring-petclinic-vets-service', 
-                    'spring-petclinic-visits-service']
+                    'spring-petclinic-visits-service'"
     }
     
     stages {
@@ -26,7 +26,7 @@ pipeline {
                     def changedFiles = sh(script: "git diff --name-only ${compareTarget}", returnStdout: true).trim()
                     
                     def changedServicesList = []
-                    SERVICES.each { service ->
+                    SERVICES.split(",").each { service ->
                         if (changedFiles.split("\n").any { it.startsWith(service) }) {
                             changedServicesList.add(service)
                         }
@@ -36,7 +36,7 @@ pipeline {
                     
                     if (CHANGED_SERVICES.isEmpty() && 
                         changedFiles.split("\n").any { it == "pom.xml" || it.startsWith("src/") }) {
-                        CHANGED_SERVICES = SERVICES.join(",")
+                        CHANGED_SERVICES = SERVICES
                     }
                     
                     echo "Services to build: ${CHANGED_SERVICES ?: 'None'}"
@@ -48,7 +48,7 @@ pipeline {
             when { expression { return !CHANGED_SERVICES.isEmpty() } }
             steps {
                 script {                  
-                    if (CHANGED_SERVICES == SERVICES.join(",")) {
+                    if (CHANGED_SERVICES == SERVICES) {
                         sh 'mvn verify'
                     } else {
                         CHANGED_SERVICES.split(",").each { service ->
