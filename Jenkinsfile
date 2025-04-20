@@ -28,7 +28,7 @@ pipeline {
                     
                     def CHANGED_SERVICES = changedServicesList.join(",")
                     
-                    if (env.CHANGED_SERVICES.isEmpty() && 
+                    if (CHANGED_SERVICES.isEmpty() && 
                         changedFiles.split("\n").any { it == "pom.xml" || it.startsWith("src/") }) {
                         CHANGED_SERVICES = env.SERVICES
                     }
