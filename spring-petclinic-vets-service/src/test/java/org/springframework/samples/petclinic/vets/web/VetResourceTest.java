@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(VetResource.class)
 @ActiveProfiles("test")
 class VetResourceTest {
+    
     @Autowired
     MockMvc mvc;
 
