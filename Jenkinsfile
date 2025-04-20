@@ -26,7 +26,7 @@ pipeline {
                         }
                     }
                     
-                    def CHANGED_SERVICES = changedServicesList.join(",")
+                    CHANGED_SERVICES = changedServicesList.join(",")
                     
                     if (CHANGED_SERVICES.isEmpty() && 
                         changedFiles.split("\n").any { it == "pom.xml" || it.startsWith("src/") }) {
