@@ -8,10 +8,9 @@ pipeline {
     
     environment {
         MINIMUM_COVERAGE = 70
+        CHANGED_SERVICES = ""
         SERVICES = "spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-discovery-server,spring-petclinic-customers-service,spring-petclinic-vets-service,spring-petclinic-visits-service"
     }
-
-    def CHANGED_SERVICES = ""
     
     stages {
         stage('Detect Changes') {
@@ -72,7 +71,8 @@ pipeline {
                     // Now check if build became unstable due to coverage, and fail it explicitly
                     script {
                         if (currentBuild.result == 'UNSTABLE') {
-                            error "Build failed: Line coverage is below the required minimum ${env.MINIMUM_COVERAGE}%"
+                            echo "Build failed: Line is below the required minimum ${env.MINIMUM_COVERAGE}%"
+                            currentBuild.result = 'FAILURE'
                         }
                     }
                 }
