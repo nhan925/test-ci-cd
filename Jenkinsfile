@@ -9,7 +9,7 @@ pipeline {
     environment {
         CHANGED_SERVICES = ""
         MINIMUM_COVERAGE = 70
-        SERVICES = "'spring-petclinic-admin-server','spring-petclinic-api-gateway','spring-petclinic-config-server','spring-petclinic-discovery-server','spring-petclinic-customers-service','spring-petclinic-vets-service','spring-petclinic-visits-service'"
+        SERVICES = "spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-discovery-server,spring-petclinic-customers-service,spring-petclinic-vets-service,spring-petclinic-visits-service"
     }
     
     stages {
