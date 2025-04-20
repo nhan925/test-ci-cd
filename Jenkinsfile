@@ -20,7 +20,7 @@ pipeline {
                     def changedFiles = sh(script: "git diff --name-only ${compareTarget}", returnStdout: true).trim()
                     
                     def changedServicesList = []
-                    SERVICES.split(",").each { service ->
+                    env.SERVICES.split(",").each { service ->
                         if (changedFiles.split("\n").any { it.startsWith(service) }) {
                             changedServicesList.add(service)
                         }
@@ -30,7 +30,7 @@ pipeline {
                     
                     if (CHANGED_SERVICES.isEmpty() && 
                         changedFiles.split("\n").any { it == "pom.xml" || it.startsWith("src/") }) {
-                        CHANGED_SERVICES = SERVICES
+                        CHANGED_SERVICES = env.SERVICES
                     }
                     
                     echo "Services to build: ${CHANGED_SERVICES ?: 'None'}"
@@ -42,7 +42,7 @@ pipeline {
             when { expression { return !CHANGED_SERVICES.isEmpty() } }
             steps {
                 script {                  
-                    if (CHANGED_SERVICES == SERVICES) {
+                    if (CHANGED_SERVICES == env.SERVICES) {
                         sh 'mvn verify'
                     } else {
                         CHANGED_SERVICES.split(",").each { service ->
