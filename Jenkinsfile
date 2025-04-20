@@ -7,10 +7,11 @@ pipeline {
     }
     
     environment {
-        CHANGED_SERVICES = ""
         MINIMUM_COVERAGE = 70
         SERVICES = "spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-discovery-server,spring-petclinic-customers-service,spring-petclinic-vets-service,spring-petclinic-visits-service"
     }
+
+    def CHANGED_SERVICES = ""
     
     stages {
         stage('Detect Changes') {
@@ -74,8 +75,6 @@ pipeline {
                             error "Build failed: Line coverage is below the required minimum ${env.MINIMUM_COVERAGE}%"
                         }
                     }
-
-                    sh 'mvn clean'
                 }
             }
         }
