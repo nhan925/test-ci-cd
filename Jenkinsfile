@@ -59,13 +59,7 @@ pipeline {
                     // Split CHANGED_SERVICES and create a parallel stage for each service
                     CHANGED_SERVICES.split(',').each { service ->
                         parallelStages["Verify ${service}"] = {
-                            stage("Verify ${service}") {
-                                steps {
-                                    script{
-                                        sh "./mvnw verify -pl ${service}"
-                                    }
-                                }
-                            }
+                            sh "./mvnw verify -pl ${service}"
                         }
                     }
                 
@@ -107,13 +101,7 @@ pipeline {
                     // Split CHANGED_SERVICES and create a parallel stage for each service
                     CHANGED_SERVICES.split(',').each { service ->
                         parallelStages["Building Docker image for ${service}"] = {
-                            stage("Building Docker image for ${service}") {
-                                steps {
-                                    script{
-                                        sh "./mvnw clean install -pl ${service} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Ddocker.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\"--push\""
-                                    }
-                                }
-                            }
+                            sh "./mvnw clean install -pl ${service} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Ddocker.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\"--push\""
                         }
                     }
                     
