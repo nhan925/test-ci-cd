@@ -54,16 +54,7 @@ pipeline {
             when { expression { return !CHANGED_SERVICES.isEmpty() } }
             steps {
                 script {                  
-                    if (CHANGED_SERVICES == env.SERVICES) {
-                        sh 'mvn verify'
-                    } else {
-                        CHANGED_SERVICES.split(",").each { service ->
-                            dir(service) {
-                                echo "Testing ${service}"
-                                sh 'mvn verify'
-                            }
-                        }
-                    }
+                    sh "./mvnw verify --projects ${CHANGED_SERVICES}"
                 }
             }
             post {
@@ -94,12 +85,8 @@ pipeline {
             when { expression { return !CHANGED_SERVICES.isEmpty() } }
             steps {
                 script {
-                    CHANGED_SERVICES.split(",").each { service ->
-                        dir(service) {
-                            echo "Building Docker image for ${service}"
-                            sh "../mvnw -X clean install -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Dcontainer.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\\\"--push\\\""
-                        }
-                    }
+                    echo "Building Docker image for ${CHANGED_SERVICES}"
+                    sh "./mvnw clean install --projects ${CHANGED_SERVICES} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Dcontainer.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\\\"--push\\\""
                 }
             }
         }
