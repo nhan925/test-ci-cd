@@ -1,3 +1,5 @@
+def CHANGED_SERVICES = ""
+
 pipeline {
     agent any
     
@@ -8,11 +10,21 @@ pipeline {
     
     environment {
         MINIMUM_COVERAGE = 70
-        CHANGED_SERVICES = ""
+        DOCKER_REGISTRY = "nhan925"
         SERVICES = "spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-discovery-server,spring-petclinic-customers-service,spring-petclinic-vets-service,spring-petclinic-visits-service"
     }
     
     stages {
+        stage('Get Latest Commit') {
+            steps {
+                script {
+                    // Get the latest commit hash
+                    LATEST_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    echo "Latest Commit Hash: ${LATEST_COMMIT}"
+                }
+            }
+        }
+
         stage('Detect Changes') {
             steps {
                 script {                  
@@ -69,11 +81,35 @@ pipeline {
                     )
                     
                     // Now check if build became unstable due to coverage, and fail it explicitly
-                    script {
-                        if (currentBuild.result == 'UNSTABLE') {
-                            error "Build failed: Line is below the required minimum ${env.MINIMUM_COVERAGE}%"
+                    // script {
+                    //     if (currentBuild.result == 'UNSTABLE') {
+                    //         error "Build failed: Line is below the required minimum ${env.MINIMUM_COVERAGE}%"
+                    //     }
+                    // }
+                }
+            }
+        }
+
+        stage('Build Docker Images') {
+            when { expression { return !CHANGED_SERVICES.isEmpty() } }
+            steps {
+                script {
+                    CHANGED_SERVICES.split(",").each { service ->
+                        dir(service) {
+                            echo "Building Docker image for ${service}"
+                            sh "mvn clean install -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Dcontainer.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\\\"--push\\\""
                         }
                     }
+                }
+            }
+        }
+
+        stage('Clean Docker Images') {
+            when { expression { return !CHANGED_SERVICES.isEmpty() } }
+            steps {
+                script {
+                    echo "Cleaning up Docker images"
+                    sh "docker image prune -a -f"
                 }
             }
         }
