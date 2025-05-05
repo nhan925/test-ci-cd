@@ -61,7 +61,9 @@ pipeline {
                         parallelStages["Verify ${service}"] = {
                             stage("Verify ${service}") {
                                 steps {
-                                    sh "./mvnw verify -pl ${service}"
+                                    script{
+                                        sh "./mvnw verify -pl ${service}"
+                                    }
                                 }
                             }
                         }
@@ -107,7 +109,9 @@ pipeline {
                         parallelStages["Building Docker image for ${service}"] = {
                             stage("Building Docker image for ${service}") {
                                 steps {
-                                    sh "./mvnw clean install -pl ${service} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Ddocker.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\"--push\""
+                                    script{
+                                        sh "./mvnw clean install -pl ${service} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Ddocker.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\"--push\""
+                                    }
                                 }
                             }
                         }
