@@ -53,8 +53,22 @@ pipeline {
         stage('Build & Test') {
             when { expression { return !CHANGED_SERVICES.isEmpty() } }
             steps {
-                script {                  
-                    sh "./mvnw verify --projects ${CHANGED_SERVICES}"
+                script {
+                    def parallelStages = [:] // Initialize an empty map for parallel stages
+                
+                    // Split CHANGED_SERVICES and create a parallel stage for each service
+                    CHANGED_SERVICES.split(',').each { service ->
+                        parallelStages["Verify ${service}"] = {
+                            stage("Verify ${service}") {
+                                steps {
+                                    sh "./mvnw verify -pl ${service}"
+                                }
+                            }
+                        }
+                    }
+                
+                    // Run the parallel stages
+                    parallel parallelStages
                 }
             }
             post {
@@ -85,9 +99,22 @@ pipeline {
             when { expression { return !CHANGED_SERVICES.isEmpty() } }
             steps {
                 script {
-                    echo "Building Docker image for ${CHANGED_SERVICES}"
+                    def parallelStages = [:] // Initialize an empty map for parallel stages
                     sh "whoami"
-                    sh "./mvnw clean install --projects ${CHANGED_SERVICES} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Ddocker.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\"--push\""
+                    
+                    // Split CHANGED_SERVICES and create a parallel stage for each service
+                    CHANGED_SERVICES.split(',').each { service ->
+                        parallelStages["Building Docker image for ${service}"] = {
+                            stage("Building Docker image for ${service}") {
+                                steps {
+                                    sh "./mvnw clean install -pl ${service} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Ddocker.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\"--push\""
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Run the parallel stages
+                    parallel parallelStages
                 }
             }
         }
