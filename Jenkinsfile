@@ -97,7 +97,7 @@ pipeline {
                     CHANGED_SERVICES.split(",").each { service ->
                         dir(service) {
                             echo "Building Docker image for ${service}"
-                            sh "mvn clean install -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Dcontainer.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\\\"--push\\\""
+                            sh "../mvn clean install -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Dcontainer.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\\\"--push\\\""
                         }
                     }
                 }
