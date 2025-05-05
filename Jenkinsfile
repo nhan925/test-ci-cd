@@ -87,7 +87,7 @@ pipeline {
                 script {
                     echo "Building Docker image for ${CHANGED_SERVICES}"
                     sh "whoami"
-                    sh "./mvnw clean install -X --projects ${CHANGED_SERVICES} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Ddocker.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\"--push\""
+                    sh "./mvnw clean install --projects ${CHANGED_SERVICES} -Dmaven.test.skip=true -P buildDocker -Ddocker.image.prefix=${env.DOCKER_REGISTRY} -Ddocker.image.tag=${LATEST_COMMIT} -Dcontainer.build.extraarg=\"--push\""
                 }
             }
         }
