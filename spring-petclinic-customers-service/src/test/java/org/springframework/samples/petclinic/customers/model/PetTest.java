@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Date;
 
 public class PetTest {
-    
     private Pet pet;
     private PetType petType;
     private Owner owner;
